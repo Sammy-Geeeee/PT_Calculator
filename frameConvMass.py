@@ -11,8 +11,8 @@ class FrameConvMass(tk.Frame):
 
         # Some base variables for the sizing of various things
         pad_ext = 10
-        entry_width = 20
-        label_width = 2
+        entry_width = 1000
+        label_width = 5
 
         # To make the main sub frame, just so I can grid everything
         frame_main = tk.Frame(master)
@@ -34,21 +34,22 @@ class FrameConvMass(tk.Frame):
         self.entry_st = tk.Entry(frame_main, width=entry_width)
         self.label_st = tk.Label(frame_main, text='st')
         # And all their positions
-        self.entry_kg.grid(row=0, column=0, padx=pad_ext, pady=pad_ext)
+        self.entry_kg.grid(row=0, column=0, padx=(pad_ext, 0), pady=pad_ext)
         self.label_kg.grid(row=0, column=1, padx=(0, 5*pad_ext), pady=pad_ext, sticky='w')
         self.entry_mg.grid(row=0, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_mg.grid(row=0, column=3, pady=pad_ext, sticky='w')
+        self.label_mg.grid(row=0, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_g.grid(row=1, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_g.grid(row=1, column=3, pady=pad_ext, sticky='w')
+        self.label_g.grid(row=1, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_T.grid(row=2, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_T.grid(row=2, column=3, pady=pad_ext, sticky='w')
+        self.label_T.grid(row=2, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_oz.grid(row=3, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_oz.grid(row=3, column=3, pady=pad_ext, sticky='w')
+        self.label_oz.grid(row=3, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_lb.grid(row=4, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_lb.grid(row=4, column=3, pady=pad_ext, sticky='w')
+        self.label_lb.grid(row=4, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_st.grid(row=5, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_st.grid(row=5, column=3, pady=pad_ext, sticky='w')
-
+        self.label_st.grid(row=5, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
+        # Configurations for expansion
+        frame_main.columnconfigure([0, 2], weight=1)
         # Bindings for each of the entries
         self.entry_kg.bind('<KeyRelease>', lambda event: self.massConversion('kg', float(self.entry_kg.get())))
         self.entry_mg.bind('<KeyRelease>', lambda event: self.massConversion('mg', float(self.entry_mg.get())))
@@ -62,8 +63,17 @@ class FrameConvMass(tk.Frame):
     def massConversion(self, given_unit, quantity):  # To do all the converting on the window
         base = massTokg(given_unit, quantity)
         conversions = massFromkg(base)
-        entries = {'kg':self.entry_kg, 'mg':self.entry_mg, 'g':self.entry_g, 'T':self.entry_T, 'oz':self.entry_oz, 'lb':self.entry_lb, 'st':self.entry_st}
+        entries = {
+            'kg':self.entry_kg, 
+            'mg':self.entry_mg, 
+            'g':self.entry_g, 
+            'T':self.entry_T, 
+            'oz':self.entry_oz, 
+            'lb':self.entry_lb, 
+            'st':self.entry_st
+            }
         del entries[given_unit]  # To remove the given unit from being edited
+        
         for unit, entry in entries.items():
             conversion = conversions[unit]
             entry.delete(0, tk.END)
@@ -71,6 +81,7 @@ class FrameConvMass(tk.Frame):
 
 
 def massTokg(unit, quantity):  # This is to change to SI unit
+    quantity = float(quantity)
     if unit == 'kg':
         return quantity
     elif unit == 'mg':

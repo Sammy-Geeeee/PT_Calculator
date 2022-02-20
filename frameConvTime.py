@@ -2,7 +2,6 @@
 
 
 import tkinter as tk
-from tkinter import ttk
 
 
 class FrameConvTime(tk.Frame):
@@ -11,8 +10,8 @@ class FrameConvTime(tk.Frame):
 
         # Some base variables for the sizing of various things
         pad_ext = 10
-        entry_width = 20
-        label_width = 2
+        entry_width = 1000
+        label_width = 5
 
         # To make the main sub frame, just so I can grid everything
         frame_main = tk.Frame(master)
@@ -28,15 +27,16 @@ class FrameConvTime(tk.Frame):
         self.entry_hr = tk.Entry(frame_main, width=entry_width)
         self.label_hr = tk.Label(frame_main, text='hr')
         # And all their positions
-        self.entry_s.grid(row=0, column=0, padx=pad_ext, pady=pad_ext)
+        self.entry_s.grid(row=0, column=0, padx=(pad_ext, 0), pady=pad_ext)
         self.label_s.grid(row=0, column=1, padx=(0, 5*pad_ext), pady=pad_ext, sticky='w')
         self.entry_ms.grid(row=0, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_ms.grid(row=0, column=3, pady=pad_ext, sticky='w')
+        self.label_ms.grid(row=0, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_min.grid(row=1, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_min.grid(row=1, column=3, pady=pad_ext, sticky='w')
+        self.label_min.grid(row=1, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_hr.grid(row=2, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_hr.grid(row=2, column=3, pady=pad_ext, sticky='w')
-    
+        self.label_hr.grid(row=2, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
+        # Configurations for expansion
+        frame_main.columnconfigure([0, 2], weight=1)
         # Bindings for each of the entries
         self.entry_s.bind('<KeyRelease>', lambda event: self.timeConversion('s', float(self.entry_s.get())))
         self.entry_ms.bind('<KeyRelease>', lambda event: self.timeConversion('ms', float(self.entry_ms.get())))
@@ -47,8 +47,14 @@ class FrameConvTime(tk.Frame):
     def timeConversion(self, given_unit, quantity):  # To do all the converting on the window
         base = timeTos(given_unit, quantity)
         conversions = timeFroms(base)
-        entries = {'s':self.entry_s, 'ms':self.entry_ms, 'min':self.entry_min, 'hr':self.entry_hr}
+        entries = {
+            's':self.entry_s, 
+            'ms':self.entry_ms, 
+            'min':self.entry_min, 
+            'hr':self.entry_hr
+            }
         del entries[given_unit]  # To remove the given unit from being edited
+        
         for unit, entry in entries.items():
             conversion = conversions[unit]
             entry.delete(0, tk.END)
@@ -56,6 +62,7 @@ class FrameConvTime(tk.Frame):
 
 
 def timeTos(unit, quantity):  # This is to change to SI unit
+    quantity = float(quantity)
     if unit == 's':
         return quantity
     elif unit == 'ms':

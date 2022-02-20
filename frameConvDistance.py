@@ -2,7 +2,6 @@
 
 
 import tkinter as tk
-from tkinter import ttk
 
 
 class FrameConvDistance(tk.Frame):
@@ -11,8 +10,8 @@ class FrameConvDistance(tk.Frame):
 
         # Some base variables for the sizing of various things
         pad_ext = 10
-        entry_width = 20
-        label_width = 2
+        entry_width = 1000
+        label_width = 5
 
         # To make the main sub frame, just so I can grid everything
         frame_main = tk.Frame(master)
@@ -36,24 +35,24 @@ class FrameConvDistance(tk.Frame):
         self.entry_mi = tk.Entry(frame_main, width=entry_width)
         self.label_mi = tk.Label(frame_main, text='mi')
         # And all their positions
-        self.entry_m.grid(row=0, column=0, padx=pad_ext, pady=pad_ext)
+        self.entry_m.grid(row=0, column=0, padx=(pad_ext, 0), pady=pad_ext)
         self.label_m.grid(row=0, column=1, padx=(0, 5*pad_ext), pady=pad_ext, sticky='w')
         self.entry_mm.grid(row=0, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_mm.grid(row=0, column=3, pady=pad_ext, sticky='w')
+        self.label_mm.grid(row=0, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_cm.grid(row=1, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_cm.grid(row=1, column=3, pady=pad_ext, sticky='w')
+        self.label_cm.grid(row=1, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_km.grid(row=2, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_km.grid(row=2, column=3, pady=pad_ext, sticky='w')
+        self.label_km.grid(row=2, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_in.grid(row=3, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_in.grid(row=3, column=3, pady=pad_ext, sticky='w')
+        self.label_in.grid(row=3, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_ft.grid(row=4, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_ft.grid(row=4, column=3, pady=pad_ext, sticky='w')
+        self.label_ft.grid(row=4, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_yd.grid(row=5, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_yd.grid(row=5, column=3, pady=pad_ext, sticky='w')
+        self.label_yd.grid(row=5, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
         self.entry_mi.grid(row=6, column=2, padx=pad_ext, pady=pad_ext)
-        self.label_mi.grid(row=6, column=3, pady=pad_ext, sticky='w')
-        
-
+        self.label_mi.grid(row=6, column=3, padx=(0, pad_ext), pady=pad_ext, sticky='w')
+        # Configurations for expansion
+        frame_main.columnconfigure([0, 2], weight=1)
         # Bindings for each of the entries
         self.entry_m.bind('<KeyRelease>', lambda event: self.distanceConversion('m', float(self.entry_m.get())))
         self.entry_mm.bind('<KeyRelease>', lambda event: self.distanceConversion('mm', float(self.entry_mm.get())))
@@ -68,8 +67,18 @@ class FrameConvDistance(tk.Frame):
     def distanceConversion(self, given_unit, quantity):  # To do all the converting on the window
         base = distanceTom(given_unit, quantity)
         conversions = distanceFromm(base)
-        entries = {'m':self.entry_m, 'mm':self.entry_mm, 'cm':self.entry_cm, 'km':self.entry_km, 'in':self.entry_in, 'ft':self.entry_ft, 'yd':self.entry_yd, 'mi':self.entry_mi}
+        entries = {
+            'm':self.entry_m, 
+            'mm':self.entry_mm, 
+            'cm':self.entry_cm, 
+            'km':self.entry_km, 
+            'in':self.entry_in, 
+            'ft':self.entry_ft, 
+            'yd':self.entry_yd, 
+            'mi':self.entry_mi
+            }
         del entries[given_unit]  # To remove the given unit from being edited
+        
         for unit, entry in entries.items():
             conversion = conversions[unit]
             entry.delete(0, tk.END)
@@ -77,6 +86,7 @@ class FrameConvDistance(tk.Frame):
 
 
 def distanceTom(unit, quantity):  # This is to change to SI unit
+    quantity = float(quantity)
     if unit == 'm':
         return quantity
     elif unit == 'mm':
@@ -88,7 +98,7 @@ def distanceTom(unit, quantity):  # This is to change to SI unit
     elif unit == 'in':
         return quantity / 39.3701
     elif unit == 'ft':
-        return quantity / 3.2808
+        return quantity / 3.28084
     elif unit == 'yd':
         return quantity / 1.09361
     elif unit == 'mi':
